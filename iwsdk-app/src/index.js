@@ -60,7 +60,8 @@ World.create(document.getElementById('scene-container'), {
   function changeColor( ) {
     sphereEntity.destroy();
     } 
-
+ 
+    
   
   const floorTexture = new TextureLoader().load('/textures/floor.jpg');
   floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
