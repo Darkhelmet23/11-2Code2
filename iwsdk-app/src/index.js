@@ -4,6 +4,9 @@ import {
   SphereGeometry,
   SessionMode,
   World,
+  PlaneGeometry,
+  AssetManager, 
+  AssetType,
 } from '@iwsdk/core';
 
 import {
@@ -11,10 +14,23 @@ import {
   PanelUI,
   ScreenSpace
 } from '@iwsdk/core';
+import { LocomotionEnvironment, EnvironmentType } from '@iwsdk/core';
+
 
 import { PanelSystem } from './panel.js'; // system for displaying "Enter VR" panel on Quest 1
-
-const assets = { };
+import { TextureLoader, RepeatWrapping, DirectionalLight } from 'three';
+const assets = { 
+  myRobot: {
+    url: '/gltf/plantSansevieria/car.glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
+  keys: {
+    url: '/gltf/plantSansevieria/keys.glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
+};
 
 World.create(document.getElementById('scene-container'), {
   assets,
@@ -24,7 +40,9 @@ World.create(document.getElementById('scene-container'), {
     features: { }
   },
 
-  features: { },
+  features: { 
+    locomotion: true
+  },
 
 }).then((world) => {
 
@@ -35,15 +53,35 @@ World.create(document.getElementById('scene-container'), {
   const sphereGeometry = new SphereGeometry(0.5, 32, 32);
   const greenMaterial = new MeshStandardMaterial({ color: 0x33ff33 });
   const sphere = new Mesh(sphereGeometry, greenMaterial);
-  sphere.position.set(1, 0, -2);
+  sphere.position.set(2, 2, 2);
   const sphereEntity = world.createTransformEntity(sphere);
+  sphereEntity.addComponent(Interactable);      
+  sphereEntity.object3D.addEventListener("pointerdown", changeColor);
+  function changeColor( ) {
+    sphereEntity.destroy();
+    } 
 
-
-
-
-
-
-
+  
+  const floorTexture = new TextureLoader().load('/textures/floor.jpg');
+  floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
+  floorTexture.repeat.set(2.75, 5.5
+  );  
+  const floorMaterial = new MeshStandardMaterial({ map: floorTexture });
+  const floorGeometry = new PlaneGeometry(100, 100);
+  const floorMesh = new Mesh(floorGeometry, floorMaterial);
+  floorMesh.rotation.x = -Math.PI / 2;
+  floorMesh.position.set(0, 0, 0);
+  const floorEntity = world.createTransformEntity(floorMesh);
+  
+  floorEntity.addComponent(LocomotionEnvironment, { type: EnvironmentType.STATIC });
+  const robotModel = AssetManager.getGLTF('myRobot').scene;
+  const robotEntity = world.createTransformEntity(robotModel);
+  robotModel.scale.set(120, 120, 120);
+  robotModel.position.set(-1, 0, -2);
+  const keysModel = AssetManager.getGLTF('keys').scene;
+  keysModel.scale.set(50, 50, 50);
+  keysModel.position.set(2, 0, 0); // move keys beside the car
+  const keysEntity = world.createTransformEntity(keysModel);
 
 
 
