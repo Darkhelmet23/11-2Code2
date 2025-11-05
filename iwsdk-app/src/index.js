@@ -30,6 +30,21 @@ const assets = {
     type: AssetType.GLTF,
     priority: 'critical',
   },
+  car3: {
+    url: '/gltf/plantSansevieria/car3.glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
+    car2: {
+    url: '/gltf/plantSansevieria/car2.glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
+    cop: {
+    url: '/gltf/plantSansevieria/cop.glb',
+    type: AssetType.GLTF,
+    priority: 'critical',
+  },
 };
 
 World.create(document.getElementById('scene-container'), {
@@ -65,8 +80,7 @@ World.create(document.getElementById('scene-container'), {
   
   const floorTexture = new TextureLoader().load('/textures/floor.jpg');
   floorTexture.wrapS = floorTexture.wrapT = RepeatWrapping;
-  floorTexture.repeat.set(2.75, 5.5
-  );  
+  floorTexture.repeat.set(4, 6 );  
   const floorMaterial = new MeshStandardMaterial({ map: floorTexture });
   const floorGeometry = new PlaneGeometry(100, 100);
   const floorMesh = new Mesh(floorGeometry, floorMaterial);
@@ -78,15 +92,44 @@ World.create(document.getElementById('scene-container'), {
   const robotModel = AssetManager.getGLTF('myRobot').scene;
   const robotEntity = world.createTransformEntity(robotModel);
   robotModel.scale.set(120, 120, 120);
-  robotModel.position.set(-1, 0, -2);
+  robotModel.position.set(-2, 0, -5);
+  
   const keysModel = AssetManager.getGLTF('keys').scene;
-  keysModel.scale.set(50, 50, 50);
-  keysModel.position.set(2, 0, 0); // move keys beside the car
+  keysModel.scale.set(2, 2, 2);
+  keysModel.position.set(21, 0, 5);
+   // move keys beside the car
   const keysEntity = world.createTransformEntity(keysModel);
 
+  const car3Model = AssetManager.getGLTF('car3').scene;
+  car3Model.scale.set(0.8, 0.8, 0.8); // move keys beside the car
 
+  const car2Model = AssetManager.getGLTF('car2').scene;
+  car2Model.scale.set(0.01, 0.01, 0.01); // move keys beside the car
 
+  const copModel = AssetManager.getGLTF('cop').scene;
+  copModel.scale.set(1, 1, 1); // move keys beside the car
+  copModel.rotation.y = Math.PI / 2;
 
+for (let i = 0; i < 4; i++) {
+  const clone = car3Model.clone(true);
+  clone.position.set((i * 6)+2, 0.8, 5); // spread out
+  world.createTransformEntity(clone);
+}
+for (let i = 0; i < 4; i++) {
+  const clone = car2Model.clone(true);
+  clone.position.set((i * 6)+5, 0, 5); // spread out
+  world.createTransformEntity(clone);
+}
+for (let i = 0; i < 4; i++) {
+  const clone = robotModel.clone(true);
+  clone.position.set((-i * 6)-2, 0, -5); // spread out
+  world.createTransformEntity(clone);
+}
+for (let i = 0; i < 4; i++) {
+  const clone = copModel.clone(true);
+  clone.position.set((-i * 6)-5, 0, -5); // spread out
+  world.createTransformEntity(clone);
+}
   // vvvvvvvv EVERYTHING BELOW WAS ADDED TO DISPLAY A BUTTON TO ENTER VR FOR QUEST 1 DEVICES vvvvvv
   //          (for some reason IWSDK doesn't show Enter VR button on Quest 1)
   world.registerSystem(PanelSystem);
